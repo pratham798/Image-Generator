@@ -14,15 +14,38 @@ const CreatePost = () => {
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const generateImage = async () => {
+    if (form.prompt) {
+      try {
+        setGeneratingImg(true);
+        const response = await fetch("http://localhost:8888/api/v1/dalle", {
+          method: "POST",
+          //headers provide additional info about the requests or response
+          headers: {
+            "Content-Type": "application/json", //this indicates that the request body is in json format
+          },
+          body: JSON.stringify({ prompt: form.prompt }),
+          // stringify converts javascript object into string in JSON format as fetch can only accepts strings in json format
+        });
+        const data = await response.json();
+        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+      } catch (err) {
+        alert(err);
+      } finally {
+        setGeneratingImg(false);
+      }
+    } else {
+      alert("Please enter a prompt");
+    }
+  };
+
   const handleSubmit = () => {};
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
   const handleSurpriseMe = () => {
-    console.log("hello");
     const randomPrompt = getRandomPrompt(form.prompt);
     setForm({ ...form, prompt: randomPrompt });
   };
-  const generateImage = () => {};
 
   return (
     <section className="max-w-7xl mx-auto">
