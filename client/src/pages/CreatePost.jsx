@@ -32,6 +32,7 @@ const CreatePost = () => {
       } catch (err) {
         alert(err);
       } finally {
+        //finally is executed after the promise is settled i.e try and catch
         setGeneratingImg(false);
       }
     } else {
@@ -39,7 +40,28 @@ const CreatePost = () => {
     }
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault(); //prevents website from refreshing
+    if (form.prompt && form.photo) {
+      try {
+        const response = await fetch("http://localhost:8888/api/v1/post", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        });
+        await response.json();
+        navigate("/");
+      } catch (error) {
+        alert(error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert("Please enter a prompt and generate an image");
+    }
+  };
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
   const handleSurpriseMe = () => {
